@@ -5,6 +5,7 @@ fetchingUsers()
 const divDropDown = document.querySelector('.dropdown')
 const divUserInfo = document.querySelector('.userInfo')
 const selectTag = document.createElement('select')
+const newUserForm = document.querySelector('#newUserForm')
 
 let opTitle = document.createElement('option')
 opTitle.innerText = "Select a User"
@@ -22,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedUser.renderUserInfo()
   })
   divDropDown.append(selectTag)
+
+  newUserForm.addEventListener('submit',(e) => {
+    e.preventDefault()
+    let name = e.target.children[0].value
+    let image = e.target.children[1].value
+    newUser(name,image)
+    e.target.reset()
+  })
 
 
 })
@@ -57,11 +66,47 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify({
         "calories": {
           "total_calories": newCal
-      }
+        }
       })
       })
       .then((resp)=>{return resp.json()})
       .then((data)=>{
         divUserInfo.children[0].children[2].innerText = data.calories.total_calories
       })
+  }
+
+  function newUser(name,image){
+    fetch(usersURL,{
+      method: 'POST',
+      headers: {
+        'content-type':'application/json'
+      },
+      body: JSON.stringify({
+        "name": name,
+        "image": image,
+        "calories": {
+          "total_calories": 0
+        }
+      })
+      })
+      .then((resp)=>{return resp.json()})
+      .then((user)=>{
+        let userObj = new UserInfo(user.id,user.name,user.image,user.calories.total_calories)
+        users.push(userObj)
+        renderUser(user)
+        userObj.renderUserInfo()
+      })
+  }
+
+  function deleteUser(user){
+    fetch(`${usersURL}/${user.id}`,{
+      method: 'DELETE',
+      headers: {
+        'content-type':'application/json'
+      }
+      })
+    users = users.filter((obj) => {return obj != user})
+    let dropDownItem = document.querySelector('select').children[user.id]
+    dropDownItem.remove()
+    divUserInfo.innerHTML = ""
   }

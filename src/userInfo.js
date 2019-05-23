@@ -44,7 +44,6 @@ class UserInfo{
       // debugger
       editCalories(user,newCal)
       user.calories.total_calories = newCal
-      user.renderUserInfo()
     })
     // create reset button
     let reset = document.createElement('button')
@@ -55,10 +54,16 @@ class UserInfo{
       let user = users.find((user)=>{return user.name == name})
       editCalories(user,0)
       user.calories.total_calories = 0
-      user.renderUserInfo()
+    })
+    let delButton = document.createElement('button')
+    delButton.innerText = "Delete User"
+    delButton.addEventListener('click', (e)=>{
+      let name = e.target.parentElement.children[0].innerText
+      let user = users.find((user)=>{return user.name == name})
+      deleteUser(user)
     })
     //append div
-    div.append(nameTag,imgTag,caloriesTag,caloriesForm,reset)
+    div.append(nameTag,imgTag,caloriesTag,caloriesForm,reset,delButton)
     divUserInfo.append(div)
   }
 
